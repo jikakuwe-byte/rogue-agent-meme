@@ -84,6 +84,13 @@ function main(): void {
   if (written !== bytes.length) {
     throw new Error(`wrote ${written} bytes, expected ${bytes.length}`);
   }
+  // Round-2 revision (27 Nov 2026): a size match is not a copy proof, so
+  // read the file back and demand byte-for-byte equality with the source
+  // before declaring the entry written.
+  const writtenBytes = readFileSync(outputPath);
+  if (!writtenBytes.equals(bytes)) {
+    throw new Error("written entry.png differs from the repository copy");
+  }
   console.log(`entry.png: ${width}x${height}, ${written} bytes -> ${outputPath}`);
 }
 
